@@ -54,7 +54,7 @@ async def catalog(call: types.CallbackQuery):
             ,reply_markup=catalog_buttons)      
     
 async def like(call: types.CallbackQuery):
-    id = (call.message.caption).split(' - ')[1][0]
+    id = (call.message.caption).split(' - ')[1].split('Автор')[0]
     user_id = call.from_user.id
     if db.check_like(user_id, id) is None:
         db.add_like(id)
