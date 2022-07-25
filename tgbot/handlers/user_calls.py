@@ -76,8 +76,9 @@ async def like(call: types.CallbackQuery):
 
 async def back(call: types.CallbackQuery):
     await call.message.delete()
+    walls = db.count_wallpapers()
     await call.message.answer(
-        'Меню.', reply_markup=main_menu)
+        f'Меню. {walls} обоев.', reply_markup=main_menu)
 
 async def inf(call: types.CallbackQuery):
     await call.message.edit_text('<b>Данный бот - это аналог wallpaper engine, но в телеграме и для телефона, буду его обновлять, добавляйте свои обои!</b>', reply_markup=main_menu_back)
