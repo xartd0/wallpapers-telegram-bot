@@ -40,7 +40,8 @@ async def end_of_upload(message: types.Message, state: FSMContext):
 
 async def catalog(call: types.CallbackQuery):
     await call.message.delete()
-    wallpaper = db.take_wallpaper()[0]
+    wallpaper = db.take_wallpaper(db.check_anti_id(call.from_user.id))[0]
+    db.add_anti_id(wallpaper[0], call.from_user.id)
     try:
         await call.message.answer_photo(
             wallpaper[1],
