@@ -57,3 +57,8 @@ class Data:
         with self.connection:
             self.cursor.execute("SELECT tg_id FROM user_likes WHERE tg_id = ? and wall_id = ?", (user_id,wall_id,))
             return self.cursor.fetchone()
+
+    def count_wallpapers(self):
+        with self.connection:
+            self.cursor.execute("select count(*) from bot_wallpapers")
+            return self.cursor.fetchone()[0]
