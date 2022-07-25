@@ -1,5 +1,6 @@
 # wallpaper-bot
 wallpaper engine in telegram
+https://t.me/livewallpaper_bot
 
 ## Features
 - Rating system
