@@ -16,9 +16,8 @@ async def user_start(message: Message):
         '@' + message.from_user.username,
         0])
         await message.answer('<b>Добро пожаловать в мир обоев на телефон!\nВсе обои в данном боте были загружены людьми.</b>')
-    walls = db.count_wallpapers()
     await message.answer(
-        f'Меню. {walls} обоев.', reply_markup=main_menu)
+        f'Меню.', reply_markup=main_menu)
 
 
 def register_user(dp: Dispatcher):
