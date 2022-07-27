@@ -1,0 +1,13 @@
+BOT_CONTAINER_NAME=wallpaper_bot_container
+BOT_IMAGE_NAME=wallpaper_bot
+BOT_NAME=wallpaper
+BOT_TOKEN=
+ADMINS=304000003
+USE_REDIS=False
+
+DB_USER=exampleDBUserName
+PG_PASSWORD=examplePostgresPass
+DB_PASS=exampleDBPassword
+DB_NAME=exampleDBName
+DB_HOST=127.0.0.1
+
