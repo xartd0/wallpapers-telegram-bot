@@ -20,14 +20,14 @@ async def upload_wallpaper(call: types.CallbackQuery):
 async def end_of_upload(message: types.Message, state: FSMContext):
     try:
         db.add_wallpaper(
-            [message.animation.file_unique_id,
+            [message.animation.file_id,
             message.from_user.id,
             now.strftime("%Y-%m-%d"),
             message.from_user.first_name,
             0])
     except:
         db.add_wallpaper(
-            [message.photo[-1].file_unique_id,
+            [message.photo[-1].file_id,
             message.from_user.id,
             now.strftime("%Y-%m-%d"),
             message.from_user.first_name,
