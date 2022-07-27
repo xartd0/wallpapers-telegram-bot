@@ -9,5 +9,6 @@ https://t.me/livewallpaper_bot
 - Upload your wallpapers
 - Wallpapers carousel
 
-![изображение](https://user-images.githubusercontent.com/43171120/181312742-cc4358d4-f08b-4f82-9881-c4f641972546.png)
+
+https://user-images.githubusercontent.com/43171120/181313499-247edbf8-69fe-4ae3-8afe-c7834ea5c3b3.mp4
 
