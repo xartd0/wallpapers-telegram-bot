@@ -141,7 +141,7 @@ def register_calls(dp: Dispatcher):
     lambda call: call.data == 'back_to_main', state='*')
 
     dp.register_callback_query_handler(catalog, 
-    lambda call: call.data == 'catalog', state='*', is_admin=True)
+    lambda call: call.data == 'catalog', state='*')
 
     dp.register_callback_query_handler(like, 
     lambda call: call.data == 'like_wallpaper', state='*')
