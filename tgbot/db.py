@@ -8,13 +8,8 @@ class Data:
         
     def create_user(self, user):
         with self.connection:
-            self.cursor.execute("INSERT INTO bot_users VALUES (null, ?, ?, ?, ?, ?)", (user))
+            self.cursor.execute("INSERT INTO bot_users VALUES (null, ?, ?, ?, ?, ?, ?)", (user))
             logger.info(f'User {user} added')
-
-    def add_wallpaper(self, wallpaper):
-        with self.connection:
-            self.cursor.execute("INSERT INTO bot_wallpapers VALUES (null, ?, ?, ?, ?, ?)", (wallpaper))
-            logger.info(f'Wallpaper {wallpaper} added')
 
     def add_wallpaper(self, wallpaper):
         with self.connection:
@@ -48,6 +43,30 @@ class Data:
     def get_all_users(self):
         with self.connection:
             self.cursor.execute("SELECT count(*) FROM bot_users")
+            return self.cursor.fetchone()[0]
+
+    def get_user_likes(self, user_id):
+        with self.connection:
+            self.cursor.execute("SELECT sum(likes) FROM bot_wallpapers WHERE owner_id = ?", (user_id,))
+            return self.cursor.fetchone()[0]
+
+    def get_user_date(self, user_id):
+        with self.connection:
+            self.cursor.execute("SELECT time_reg FROM bot_users WHERE tg_id = ?", (user_id,))
+            return self.cursor.fetchone()[0]
+
+    def get_notif_user(self, user_id):
+        with self.connection:
+            self.cursor.execute("SELECT notif FROM bot_users WHERE tg_id = ?", (user_id,))
+            return self.cursor.fetchone()[0]
+
+    def change_notif_user(self, notif, user_id):
+        with self.connection:
+            self.cursor.execute("UPDATE bot_users SET notif = ? WHERE tg_id = ?", (notif,user_id,))
+
+    def get_user_wallpapers(self, user_id):
+        with self.connection:
+            self.cursor.execute("SELECT count(*) FROM bot_wallpapers WHERE owner_id = ?", (user_id,))
             return self.cursor.fetchone()[0]
 
     def get_all_ids(self):
