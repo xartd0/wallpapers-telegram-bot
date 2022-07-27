@@ -1,8 +1,9 @@
 from aiogram import types, Dispatcher
 from tgbot.keyboards.inline import *
+from tgbot.handlers.user import *
 
 async def bot_echo(message: types.Message):
-    await message.answer('Я не очень понял твое сообщение, вот главное меню', reply_markup=main_menu)
+    await user_start(message)
 
 
 def register_echo(dp: Dispatcher):
