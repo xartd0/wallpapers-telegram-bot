@@ -53,7 +53,7 @@ class Data:
     def get_all_ids(self):
         with self.connection:
             clear_ids = []
-            for row in self.cursor.execute("SELECT id FROM bot_wallpapers"):
+            for row in self.cursor.execute("SELECT id from bot_wallpapers ORDER by likes DESC"):
                 clear_ids.append(row[0])
             return clear_ids
 
