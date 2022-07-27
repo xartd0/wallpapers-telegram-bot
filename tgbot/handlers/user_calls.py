@@ -7,6 +7,7 @@ from tgbot.misc.states import Upload_wallpaper
 from aiogram.dispatcher import FSMContext
 from tgbot import db
 from datetime import datetime
+from tgbot.handlers.admin import bot
 
 db = db.Data("tgbot/database/database.db")
 now = datetime.now()
@@ -41,7 +42,7 @@ async def end_of_upload(message: types.Message, state: FSMContext):
 async def catalog(call: types.CallbackQuery):
     await call.message.delete()
     ids = db.get_all_ids()
-    wallpaper = db.take_wallpaper_by_id(ids[0])[0]
+    wallpaper = db.take_wallpaper_by_id(ids[-1])[0]
     caption = f'<b>Айди - <i>{wallpaper[0]}</i>\
                 \nАвтор - <i>{wallpaper[4]}</i>\
                 \nДобавлено - <i>{wallpaper[3]}</i>\
@@ -66,6 +67,9 @@ async def like(call: types.CallbackQuery):
         db.add_like(id, user_id)
         await call.message.edit_caption("<b>" + call.message.caption.replace(f'Лайков - {str(wallpaper[5])}',f'Лайков - {str(wallpaper[5]+1)}') + "</b>"
         , reply_markup=catalog_buttons)
+        check = db.get_notif_user(wallpaper[2])
+        if check == 0:
+            await bot.send_message(wallpaper[2], f'<b>{call.from_user.first_name} поставил вам лайк.</b>')
         await call.answer('Вы поставили лайк!')
     else:
         db.remove_like(id, user_id)
@@ -118,6 +122,33 @@ async def prev_wall(call: types.CallbackQuery):
             caption=caption
             ,reply_markup=catalog_buttons)   
 
+async def profile(call: types.CallbackQuery):
+    user_id = call.from_user.id
+    notifs = db.get_notif_user(user_id)
+    if notifs == 0:
+        text = 'включены'
+    else:
+        text = 'выключены'
+    await call.message.edit_text(f'<b>Ваша статистика.\n\
+                                    \n  -  Айди - {user_id}\
+                                    \n  -  Имя - <i>{call.from_user.first_name}</i>\
+                                    \n  -  Вы с нами с - <i>{db.get_user_date(user_id)}</i>\
+                                    \n  -  Вы загрузили - {db.get_user_wallpapers(user_id)} обоев.\
+                                    \n  -  У вас {db.get_user_likes(user_id)} лайков.\
+                                    \n  -  Уведомления - {text}</b>', reply_markup=profile_menu)
+
+async def notifications(call: types.CallbackQuery):
+    user_id = call.from_user.id
+    notifs = db.get_notif_user(user_id)
+    if notifs == 0:
+        await call.message.edit_text('<b>'+
+            call.message.text.replace('включены','выключены') + '</b>', reply_markup=profile_menu)
+        db.change_notif_user(1,user_id)
+    else:
+        await call.message.edit_text('<b>'+
+            call.message.text.replace('выключены','включены') + '</b>', reply_markup=profile_menu)
+        db.change_notif_user(0,user_id)
+
 
 
 async def back(call: types.CallbackQuery):
@@ -136,6 +167,9 @@ def register_calls(dp: Dispatcher):
 
     dp.register_callback_query_handler(upload_wallpaper, 
     lambda call: call.data == 'upload', state='*')
+
+    dp.register_callback_query_handler(notifications, 
+    lambda call: call.data == 'notif', state='*')
  
     dp.register_callback_query_handler(back, 
     lambda call: call.data == 'back_to_main', state='*')
@@ -154,6 +188,9 @@ def register_calls(dp: Dispatcher):
 
     dp.register_callback_query_handler(prev_wall, 
     lambda call: call.data == 'prev_wallpaper', state='*')
+
+    dp.register_callback_query_handler(profile, 
+    lambda call: call.data == 'profile', state='*')
 
     dp.register_message_handler(end_of_upload,
     content_types=['photo','animation'],
