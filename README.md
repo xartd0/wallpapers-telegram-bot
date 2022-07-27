@@ -7,5 +7,7 @@ https://t.me/livewallpaper_bot
 - Gif and photo support
 - Media is not stored on the server 
 - Upload your wallpapers
+- Wallpapers carousel
 
-![изображение](https://user-images.githubusercontent.com/43171120/180885004-fcc7f8d7-a917-4609-93ba-7a57476c235a.png)
+![изображение](https://user-images.githubusercontent.com/43171120/181312742-cc4358d4-f08b-4f82-9881-c4f641972546.png)
+
