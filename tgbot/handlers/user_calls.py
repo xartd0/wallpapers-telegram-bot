@@ -41,7 +41,7 @@ async def end_of_upload(message: types.Message, state: FSMContext):
 async def catalog(call: types.CallbackQuery):
     await call.message.delete()
     ids = db.get_all_ids()
-    wallpaper = db.take_wallpaper_by_id(ids[-1])[0]
+    wallpaper = db.take_wallpaper_by_id(ids[0])[0]
     caption = f'<b>Айди - <i>{wallpaper[0]}</i>\
                 \nАвтор - <i>{wallpaper[4]}</i>\
                 \nДобавлено - <i>{wallpaper[3]}</i>\
