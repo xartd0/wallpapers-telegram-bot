@@ -1,4 +1,3 @@
-from email import message
 from aiogram import Dispatcher
 from aiogram import types
 from aiohttp import ContentTypeError
