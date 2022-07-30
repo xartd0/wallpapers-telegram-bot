@@ -11,5 +11,6 @@ https://t.me/livewallpaper_bot
 - Notifications system
 - Profile system
 
-https://user-images.githubusercontent.com/43171120/181313499-247edbf8-69fe-4ae3-8afe-c7834ea5c3b3.mp4
 
+
+![изображение](https://user-images.githubusercontent.com/43171120/181935394-90f37a86-0905-4be6-9f03-7e3a9ac94db4.png)
