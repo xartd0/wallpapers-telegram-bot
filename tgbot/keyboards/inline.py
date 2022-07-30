@@ -19,6 +19,19 @@ back_btn = InlineKeyboardButton('◀', callback_data='prev_wallpaper')
 next_btn = InlineKeyboardButton('▶', callback_data='next_wallpaper')
 catalog_buttons = InlineKeyboardMarkup(2).add(back_btn, next_btn, like_btn ,btn_back)
 
+# Кнопки в каталоге автора
+like_btn = InlineKeyboardButton('❤ Лайк', callback_data='like_wallpaper')
+back_btn = InlineKeyboardButton('◀', callback_data='prev_wallpaper')
+next_btn = InlineKeyboardButton('▶', callback_data='next_wallpaper')
+delete_btn = InlineKeyboardButton('⛔ Удалить', callback_data='del_wallpaper')
+catalog_buttons_del = InlineKeyboardMarkup(2).add(back_btn, next_btn, like_btn ,btn_back, delete_btn)
 
+
+# Кнопки в профиле
 notif_btn = InlineKeyboardButton('📨 Уведомления', callback_data='notif')
 profile_menu = InlineKeyboardMarkup(row_width=1).add(notif_btn, btn_back)
+
+#Кнопки при удаление
+btn_yes = InlineKeyboardButton('✅ Да', callback_data='yes')
+btn_no = InlineKeyboardButton('⛔ Нет', callback_data='no')
+yes_or_no_keyboard = InlineKeyboardMarkup().add(btn_yes, btn_no)
