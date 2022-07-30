@@ -4,7 +4,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 # Главное меню
 btn_1 = InlineKeyboardButton('📚 Каталог', callback_data='catalog')
 btn_2 = InlineKeyboardButton('📂 Загрузить', callback_data='upload')
-btn_3 = InlineKeyboardButton('❔ Информация', callback_data='information')
+btn_3 = InlineKeyboardButton('📊 Статистика', callback_data='information')
 btn_4 = InlineKeyboardButton('💻 Профиль', callback_data='profile')
 main_menu = InlineKeyboardMarkup(row_width=2).add(btn_1, btn_2, btn_4, btn_3)
 
