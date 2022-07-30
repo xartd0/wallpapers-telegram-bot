@@ -27,7 +27,7 @@ async def end_of_upload(message: types.Message, state: FSMContext):
             message.from_user.first_name,
             0])
     except:
-        db.add_wallpaper(
+        db.add_wallpaper( 
             [message.photo[-1].file_id,
             message.from_user.id,
             now.strftime("%Y-%m-%d"),
@@ -47,16 +47,20 @@ async def catalog(call: types.CallbackQuery):
                 \nАвтор - <i>{wallpaper[4]}</i>\
                 \nДобавлено - <i>{wallpaper[3]}</i>\
                 \nЛайков - <i>{wallpaper[5]}</i></b>'
+    if call.from_user.id == int(wallpaper[2]):
+        keyb = catalog_buttons_del
+    else:
+        keyb = catalog_buttons
     try:
         await call.message.answer_photo(
             wallpaper[1],
             caption=caption
-            ,reply_markup=catalog_buttons)
+            ,reply_markup=keyb)
     except:
         await call.message.answer_animation(
             wallpaper[1],
             caption=caption
-            ,reply_markup=catalog_buttons)    
+            ,reply_markup=keyb)    
 
 
 async def like(call: types.CallbackQuery):
@@ -69,7 +73,7 @@ async def like(call: types.CallbackQuery):
         , reply_markup=catalog_buttons)
         check = db.get_notif_user(wallpaper[2])
         if check == 0:
-            await bot.send_message(wallpaper[2], f'<b>{call.from_user.first_name} поставил вам лайк.</b>')
+            await bot.send_message(wallpaper[2], f'<b>{call.from_user.first_name} поставил(а) вам лайк.</b>')
         await call.answer('Вы поставили лайк!')
     else:
         db.remove_like(id, user_id)
@@ -90,16 +94,20 @@ async def next_wall(call: types.CallbackQuery):
                 \nАвтор - <i>{wallpaper[4]}</i>\
                 \nДобавлено - <i>{wallpaper[3]}</i>\
                 \nЛайков - <i>{wallpaper[5]}</i></b>'
+    if call.from_user.id == int(wallpaper[2]):
+        keyb = catalog_buttons_del
+    else:
+        keyb = catalog_buttons
     try:
         await call.message.answer_photo(
             wallpaper[1],
             caption=caption
-            ,reply_markup=catalog_buttons)
+            ,reply_markup=keyb)
     except:
         await call.message.answer_animation(
             wallpaper[1],
             caption=caption
-            ,reply_markup=catalog_buttons)   
+            ,reply_markup=keyb)   
 
 async def prev_wall(call: types.CallbackQuery):
     await call.message.delete()
@@ -111,16 +119,20 @@ async def prev_wall(call: types.CallbackQuery):
                 \nАвтор - <i>{wallpaper[4]}</i>\
                 \nДобавлено - <i>{wallpaper[3]}</i>\
                 \nЛайков - <i>{wallpaper[5]}</i></b>'
+    if call.from_user.id == int(wallpaper[2]):
+        keyb = catalog_buttons_del
+    else:
+        keyb = catalog_buttons
     try:
         await call.message.answer_photo(
             wallpaper[1],
             caption=caption
-            ,reply_markup=catalog_buttons)
+            ,reply_markup=keyb)
     except:
         await call.message.answer_animation(
             wallpaper[1],
             caption=caption
-            ,reply_markup=catalog_buttons)   
+            ,reply_markup=keyb)   
 
 async def profile(call: types.CallbackQuery):
     user_id = call.from_user.id
@@ -149,12 +161,25 @@ async def notifications(call: types.CallbackQuery):
             call.message.text.replace('выключены','включены') + '</b>', reply_markup=profile_menu)
         db.change_notif_user(0,user_id)
 
+async def del_wall(call: types.CallbackQuery):
+    await call.message.edit_reply_markup(reply_markup=yes_or_no_keyboard)
 
+async def yes_delete(call: types.CallbackQuery):
+    db.del_wallpapers_by_id((call.message.caption).split(' - ')[1].split('Автор')[0])
+    await call.answer('Обои успешно удалены!')
+    await call.message.delete()
+    await call.message.answer(
+        f'Меню.', reply_markup=main_menu)
+
+
+async def no_delete(call: types.CallbackQuery):
+    await call.message.edit_reply_markup(reply_markup=catalog_buttons_del)
 
 async def back(call: types.CallbackQuery):
     await call.message.delete()
     await call.message.answer(
         f'Меню.', reply_markup=main_menu)
+    
 
 async def inf(call: types.CallbackQuery):
     walls = db.count_wallpapers()
@@ -191,6 +216,15 @@ def register_calls(dp: Dispatcher):
 
     dp.register_callback_query_handler(profile, 
     lambda call: call.data == 'profile', state='*')
+
+    dp.register_callback_query_handler(del_wall, 
+    lambda call: call.data == 'del_wallpaper', state='*')
+
+    dp.register_callback_query_handler(yes_delete, 
+    lambda call: call.data == 'yes', state='*')
+
+    dp.register_callback_query_handler(no_delete, 
+    lambda call: call.data == 'no', state='*')
 
     dp.register_message_handler(end_of_upload,
     content_types=['photo','animation'],
