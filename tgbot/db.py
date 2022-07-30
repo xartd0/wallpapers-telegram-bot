@@ -96,3 +96,8 @@ class Data:
         with self.connection:
             self.cursor.execute("select count(*) from bot_wallpapers")
             return self.cursor.fetchone()[0]
+
+    def get_top_users(self):
+        with self.connection:
+            self.cursor.execute("SELECT owner_name, count(*) FROM bot_wallpapers GROUP BY owner_name ORDER BY count(*) DESC LIMIT 5;")
+            return self.cursor.fetchall()
