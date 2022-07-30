@@ -12,11 +12,13 @@ from tgbot.handlers.echo import register_echo
 from tgbot.handlers.user import register_user
 from tgbot.handlers.user_calls import register_calls
 from tgbot.middlewares.environment import EnvironmentMiddleware
+from tgbot.middlewares.environment import ThrottlingMiddleware
 from tgbot.logger import logger
 
 
 def register_all_middlewares(dp, config):
     dp.setup_middleware(EnvironmentMiddleware(config=config))
+    dp.setup_middleware(ThrottlingMiddleware())
 
 
 def register_all_filters(dp):
