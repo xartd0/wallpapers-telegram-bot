@@ -184,7 +184,19 @@ async def back(call: types.CallbackQuery):
 async def inf(call: types.CallbackQuery):
     walls = db.count_wallpapers()
     users = db.get_all_users()
-    await call.message.edit_text(f'<b>Данный бот - это аналог wallpaper engine, но в телеграме и для телефона, буду его обновлять, добавляйте свои обои!\n\nСтатистика.\nЗагрузили - {walls} обоев.\nВсего - {users} пользователей.\n\nВо всем вопросам - @xartd012</b>', reply_markup=main_menu_back)
+    get_top = db.get_top_users()
+    await call.message.edit_text(
+        f'<b><i>Топ пользователей</i></b>\n'
+        f'<b>   {get_top[0][0]}    ⇝  {get_top[0][1]}</b>\n'
+        f'<b>   {get_top[1][0]}    ⇝  {get_top[1][1]}</b>\n'
+        f'<b>   {get_top[2][0]}    ⇝  {get_top[2][1]}</b>\n'
+        f'<b>   {get_top[3][0]}    ⇝  {get_top[3][1]}</b>\n'
+        f'<b>   {get_top[4][0]}    ⇝  {get_top[4][1]}</b>\n\n'
+        f'<b><i>Общая статистика</i></b>\n'
+        f'<b>   Всего загрузили    ⇝ {walls}</b>\n'
+        f'<b>   Всего пользователей    ⇝ {users}</b>\n\n'
+        f'<b><i>По всем вопросам - @xartd012</i></b>\n'
+        , reply_markup=main_menu_back)
 
 
 
