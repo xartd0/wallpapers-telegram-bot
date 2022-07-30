@@ -69,10 +69,14 @@ class Data:
             self.cursor.execute("SELECT count(*) FROM bot_wallpapers WHERE owner_id = ?", (user_id,))
             return self.cursor.fetchone()[0]
 
+    def del_wallpapers_by_id(self, wall_id):
+        with self.connection:
+            self.cursor.execute("DELETE FROM bot_wallpapers WHERE id = ?", (wall_id,))
+
     def get_all_ids(self):
         with self.connection:
             clear_ids = []
-            for row in self.cursor.execute("SELECT id from bot_wallpapers ORDER by likes DESC"):
+            for row in self.cursor.execute("SELECT id from bot_wallpapers"):
                 clear_ids.append(row[0])
             return clear_ids
 
