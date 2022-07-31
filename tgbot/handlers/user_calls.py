@@ -1,6 +1,8 @@
+from email import message
 from aiogram import Dispatcher
 from aiogram import types
 from aiohttp import ContentTypeError
+from requests import delete
 from tgbot.keyboards.inline import *
 from tgbot.misc.states import Upload_wallpaper
 from aiogram.dispatcher import FSMContext
@@ -18,34 +20,80 @@ async def upload_wallpaper(call: types.CallbackQuery):
         , reply_markup=main_menu_back)
     await Upload_wallpaper.media.set()
 
+async def get_cats(user_id, mode):
+    all = db.get_all_cat()
+    spisok_keyboards = InlineKeyboardMarkup(row_width=2)
+    now_filter = db.get_user_filters(user_id)
+    for hq in all:
+        if str(hq[0]) in now_filter.split(','):
+            spisok_keyboards.insert(InlineKeyboardButton(f'✅ {hq[1]}', callback_data='filter' + str(hq[0])))
+        else:
+            spisok_keyboards.insert(InlineKeyboardButton(f'{hq[1]}', callback_data='filter' + str(hq[0])))
+    if mode == 1:
+        spisok_keyboards.insert(btn_back)
+    else:
+        spisok_keyboards.insert(filter_back)
+    return spisok_keyboards
+
 async def end_of_upload(message: types.Message, state: FSMContext):
     try:
-        db.add_wallpaper(
-            [message.animation.file_id,
-            message.from_user.id,
-            now.strftime("%Y-%m-%d"),
-            message.from_user.first_name,
-            0])
+        await state.update_data(media=message.animation.file_id)
     except:
-        db.add_wallpaper( 
-            [message.photo[-1].file_id,
-            message.from_user.id,
-            now.strftime("%Y-%m-%d"),
-            message.from_user.first_name,
-            0])
+        await state.update_data(media=message.photo[-1].file_id)
+    all = db.get_all_cat()
+    spisok_keyboards = InlineKeyboardMarkup(row_width=2)
+    for hq in all:
+        spisok_keyboards.insert(InlineKeyboardButton(f'{hq[1]}', callback_data='cat' + str(hq[0])))
     await message.answer(
+        '<b>Выберите категорию!</b>'
+        , reply_markup=spisok_keyboards)
+    await Upload_wallpaper.next()
+
+async def end_of_upload_last(call: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        data['cat'] = call.data.split('cat')[1]
+        await call.message.delete()
+        db.add_wallpaper( 
+            [data['media'],
+            call.from_user.id,
+            now.strftime("%Y-%m-%d"),
+            call.from_user.first_name,
+            0,data['cat']])
+    await call.message.answer(
         '<b>Обои успешно загружены, теперь они будут в каталоге бота!</b>'
         , reply_markup=main_menu_back)
-    await state.finish()
 
+async def filter_add(call: types.CallbackQuery):
+    filter_id = call.data.split('filter')[1]
+    now_filter = db.get_user_filters(call.from_user.id)
+    if filter_id in now_filter:
+        now_filter = now_filter.replace(',' + filter_id,'')
+    else:
+        now_filter += ',' + filter_id
+    db.add_filter(now_filter,call.from_user.id)
+    spisok_keyboards = await get_cats(call.from_user.id, 0)
+    await call.message.edit_reply_markup(reply_markup=spisok_keyboards)
+    
+        
+
+
+async def pre_filters(call: types.CallbackQuery):
+    await call.message.edit_text('<b>Выберите фильтры для поиска обоев!</b>', reply_markup=filters_keyboard)    
+                                          
+async def filters(call: types.CallbackQuery):
+    spisok_keyboards = await get_cats(call.from_user.id, 0)
+    await call.message.edit_text('<b>Фильтры</b>', reply_markup=spisok_keyboards)
 
 async def catalog(call: types.CallbackQuery):
     await call.message.delete()
-    ids = db.get_all_ids()
+    now_filter = db.get_user_filters(call.from_user.id)
+    ids = db.get_all_ids(now_filter)
     wallpaper = db.take_wallpaper_by_id(ids[-1])[0]
+    cat = db.get_cat_by_id(wallpaper[6])
     caption = f'<b>Айди - <i>{wallpaper[0]}</i>\
                 \nАвтор - <i>{wallpaper[4]}</i>\
                 \nДобавлено - <i>{wallpaper[3]}</i>\
+                \nКатегория - <i>{cat}</i>\
                 \nЛайков - <i>{wallpaper[5]}</i></b>'
     if call.from_user.id == int(wallpaper[2]):
         keyb = catalog_buttons_del
@@ -83,15 +131,18 @@ async def like(call: types.CallbackQuery):
 
 async def next_wall(call: types.CallbackQuery):
     id = int((call.message.caption).split(' - ')[1].split('Автор')[0])
-    ids = db.get_all_ids()
+    now_filter = db.get_user_filters(call.from_user.id)
+    ids = db.get_all_ids(now_filter)
     next_id = ids.index(id)
     try:
         wallpaper = db.take_wallpaper_by_id(ids[next_id + 1])[0]
     except:
         wallpaper = db.take_wallpaper_by_id(ids[0])[0]
+    cat = db.get_cat_by_id(wallpaper[6])
     caption = f'<b>Айди - <i>{wallpaper[0]}</i>\
                 \nАвтор - <i>{wallpaper[4]}</i>\
                 \nДобавлено - <i>{wallpaper[3]}</i>\
+                \nКатегория - <i>{cat}</i>\
                 \nЛайков - <i>{wallpaper[5]}</i></b>'
     if call.from_user.id == int(wallpaper[2]):
         keyb = catalog_buttons_del
@@ -102,6 +153,7 @@ async def next_wall(call: types.CallbackQuery):
         await call.message.edit_media(media = link)
         await call.message.edit_caption(caption=caption, reply_markup=keyb)
     except:
+        await call.message.delete()
         await call.message.answer_animation(
             wallpaper[1],
             caption=caption
@@ -110,12 +162,15 @@ async def next_wall(call: types.CallbackQuery):
 
 async def prev_wall(call: types.CallbackQuery):
     id = int((call.message.caption).split(' - ')[1].split('Автор')[0])
-    ids = db.get_all_ids()
+    now_filter = db.get_user_filters(call.from_user.id)
+    ids = db.get_all_ids(now_filter)
     prev_id = ids.index(id)
     wallpaper = db.take_wallpaper_by_id(ids[prev_id - 1])[0]
+    cat = db.get_cat_by_id(wallpaper[6])
     caption = f'<b>Айди - <i>{wallpaper[0]}</i>\
                 \nАвтор - <i>{wallpaper[4]}</i>\
                 \nДобавлено - <i>{wallpaper[3]}</i>\
+                \nКатегория - <i>{cat}</i>\
                 \nЛайков - <i>{wallpaper[5]}</i></b>'
     if call.from_user.id == int(wallpaper[2]):
         keyb = catalog_buttons_del
@@ -126,6 +181,7 @@ async def prev_wall(call: types.CallbackQuery):
         await call.message.edit_media(media = link)
         await call.message.edit_caption(caption=caption, reply_markup=keyb)
     except:
+        await call.message.delete()
         await call.message.answer_animation(
             wallpaper[1],
             caption=caption
@@ -176,7 +232,9 @@ async def back(call: types.CallbackQuery):
     await call.message.delete()
     await call.message.answer(
         f'Меню.', reply_markup=main_menu)
-    
+
+async def back_to_filter(call: types.CallbackQuery):
+    await call.message.edit_text('<b>Выберите фильтры для поиска обоев!</b>', reply_markup=filters_keyboard)
 
 async def inf(call: types.CallbackQuery):
     walls = db.count_wallpapers()
@@ -234,6 +292,21 @@ def register_calls(dp: Dispatcher):
 
     dp.register_callback_query_handler(no_delete, 
     lambda call: call.data == 'no', state='*')
+
+    dp.register_callback_query_handler(pre_filters, 
+    lambda call: call.data == 'pre_filters', state='*')
+
+    dp.register_callback_query_handler(filters, 
+    lambda call: call.data == 'filters', state='*')
+
+    dp.register_callback_query_handler(back_to_filter, 
+    lambda call: call.data == 'back_to_filter', state='*')
+
+    dp.register_callback_query_handler(end_of_upload_last, 
+    lambda call: call.data.startswith('cat'), state=Upload_wallpaper.cat)
+
+    dp.register_callback_query_handler(filter_add, 
+    lambda call: call.data.startswith('filter'), state='*')
 
     dp.register_message_handler(end_of_upload,
     content_types=['photo','animation'],
