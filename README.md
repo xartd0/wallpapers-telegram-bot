@@ -10,6 +10,7 @@ https://t.me/livewallpaper_bot
 - Wallpapers carousel
 - Notifications system
 - Profile system
+- Filters
 
 
 
