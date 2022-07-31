@@ -14,4 +14,5 @@ https://t.me/livewallpaper_bot
 
 
 
-![изображение](https://user-images.githubusercontent.com/43171120/181935394-90f37a86-0905-4be6-9f03-7e3a9ac94db4.png)
+https://user-images.githubusercontent.com/43171120/182048970-0002fbfa-2b31-477c-bd08-dd4638cd4646.mp4
+
