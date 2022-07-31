@@ -7,6 +7,7 @@ from aiogram.dispatcher import FSMContext
 from tgbot import db
 from datetime import datetime
 from tgbot.handlers.admin import bot
+from aiogram.types import InputMediaPhoto
 
 db = db.Data("tgbot/database/database.db")
 now = datetime.now()
@@ -81,7 +82,6 @@ async def like(call: types.CallbackQuery):
         , reply_markup=catalog_buttons)
 
 async def next_wall(call: types.CallbackQuery):
-    await call.message.delete()
     id = int((call.message.caption).split(' - ')[1].split('Автор')[0])
     ids = db.get_all_ids()
     next_id = ids.index(id)
@@ -97,19 +97,18 @@ async def next_wall(call: types.CallbackQuery):
         keyb = catalog_buttons_del
     else:
         keyb = catalog_buttons
+    link = InputMediaPhoto(wallpaper[1])
     try:
-        await call.message.answer_photo(
-            wallpaper[1],
-            caption=caption
-            ,reply_markup=keyb)
+        await call.message.edit_media(media = link)
+        await call.message.edit_caption(caption=caption, reply_markup=keyb)
     except:
         await call.message.answer_animation(
             wallpaper[1],
             caption=caption
             ,reply_markup=keyb)   
 
+
 async def prev_wall(call: types.CallbackQuery):
-    await call.message.delete()
     id = int((call.message.caption).split(' - ')[1].split('Автор')[0])
     ids = db.get_all_ids()
     prev_id = ids.index(id)
@@ -122,11 +121,10 @@ async def prev_wall(call: types.CallbackQuery):
         keyb = catalog_buttons_del
     else:
         keyb = catalog_buttons
+    link = InputMediaPhoto(wallpaper[1])
     try:
-        await call.message.answer_photo(
-            wallpaper[1],
-            caption=caption
-            ,reply_markup=keyb)
+        await call.message.edit_media(media = link)
+        await call.message.edit_caption(caption=caption, reply_markup=keyb)
     except:
         await call.message.answer_animation(
             wallpaper[1],
