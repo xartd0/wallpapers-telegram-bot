@@ -85,30 +85,33 @@ async def filters(call: types.CallbackQuery):
     await call.message.edit_text('<b>Фильтры</b>', reply_markup=spisok_keyboards)
 
 async def catalog(call: types.CallbackQuery):
-    await call.message.delete()
     now_filter = db.get_user_filters(call.from_user.id)
     ids = db.get_all_ids(now_filter)
-    wallpaper = db.take_wallpaper_by_id(ids[-1])[0]
-    cat = db.get_cat_by_id(wallpaper[6])
-    caption = f'<b>Айди - <i>{wallpaper[0]}</i>\
-                \nАвтор - <i>{wallpaper[4]}</i>\
-                \nДобавлено - <i>{wallpaper[3]}</i>\
-                \nКатегория - <i>{cat}</i>\
-                \nЛайков - <i>{wallpaper[5]}</i></b>'
-    if call.from_user.id == int(wallpaper[2]):
-        keyb = catalog_buttons_del
+    if len(ids) != 0:
+        await call.message.delete()
+        wallpaper = db.take_wallpaper_by_id(ids[-1])[0]
+        cat = db.get_cat_by_id(wallpaper[6])
+        caption = f'<b>Айди - <i>{wallpaper[0]}</i>\
+                    \nАвтор - <i>{wallpaper[4]}</i>\
+                    \nДобавлено - <i>{wallpaper[3]}</i>\
+                    \nКатегория - <i>{cat}</i>\
+                    \nЛайков - <i>{wallpaper[5]}</i></b>'
+        if call.from_user.id == int(wallpaper[2]):
+            keyb = catalog_buttons_del
+        else:
+            keyb = catalog_buttons
+        try:
+            await call.message.answer_photo(
+                wallpaper[1],
+                caption=caption
+                ,reply_markup=keyb)
+        except:
+            await call.message.answer_animation(
+                wallpaper[1],
+                caption=caption
+                ,reply_markup=keyb)  
     else:
-        keyb = catalog_buttons
-    try:
-        await call.message.answer_photo(
-            wallpaper[1],
-            caption=caption
-            ,reply_markup=keyb)
-    except:
-        await call.message.answer_animation(
-            wallpaper[1],
-            caption=caption
-            ,reply_markup=keyb)    
+        await call.answer('Выберите фильтры для поиска!')
 
 
 async def like(call: types.CallbackQuery):
