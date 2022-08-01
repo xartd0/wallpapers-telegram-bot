@@ -1,4 +1,3 @@
-from email import message
 from aiogram import Dispatcher
 from aiogram import types
 from aiohttp import ContentTypeError
@@ -66,7 +65,7 @@ async def end_of_upload_last(call: types.CallbackQuery, state: FSMContext):
 async def filter_add(call: types.CallbackQuery):
     filter_id = call.data.split('filter')[1]
     now_filter = db.get_user_filters(call.from_user.id)
-    if filter_id in now_filter:
+    if filter_id in now_filter.split(','):
         now_filter = now_filter.replace(',' + filter_id,'')
     else:
         now_filter += ',' + filter_id
