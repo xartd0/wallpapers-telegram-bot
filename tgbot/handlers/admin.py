@@ -1,11 +1,6 @@
-from aiogram import Bot, Dispatcher
+from aiogram import Dispatcher
 from aiogram.types import Message
-from tgbot import db
-from tgbot.config import load_config
-
-config = load_config(".env")
-bot = Bot(token=config.tg_bot.token, parse_mode='HTML')
-db = db.Data("tgbot/database/database.db")
+from tgbot.handlers.imports import *
 
 async def admin_spam(message: Message):
     users = db.get_all_users_ids()

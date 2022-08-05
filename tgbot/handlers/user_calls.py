@@ -1,17 +1,11 @@
 from aiogram import Dispatcher
 from aiogram import types
-from aiohttp import ContentTypeError
-from requests import delete
 from tgbot.keyboards.inline import *
 from tgbot.misc.states import Upload_wallpaper
 from aiogram.dispatcher import FSMContext
-from tgbot import db
-from datetime import datetime
-from tgbot.handlers.admin import bot
 from aiogram.types import InputMediaPhoto
+from tgbot.handlers.imports import *
 
-db = db.Data("tgbot/database/database.db")
-now = datetime.now()
 
 async def upload_wallpaper(call: types.CallbackQuery):
     await call.message.edit_text(

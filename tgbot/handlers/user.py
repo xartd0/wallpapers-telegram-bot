@@ -1,11 +1,7 @@
 from aiogram import Dispatcher
 from aiogram.types import Message
-from tgbot import db
-from datetime import datetime
 from tgbot.keyboards.inline import *
-
-db = db.Data("tgbot/database/database.db")
-now = datetime.now()
+from tgbot.handlers.imports import *
 
 async def user_start(message: Message):
     user_id = message.from_user.id
