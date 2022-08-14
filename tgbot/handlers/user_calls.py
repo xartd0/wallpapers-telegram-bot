@@ -5,7 +5,7 @@ from tgbot.misc.states import Upload_wallpaper
 from aiogram.dispatcher import FSMContext
 from aiogram.types import InputMediaPhoto
 from tgbot.handlers.imports import *
-
+import aiogram.utils.markdown as fmt
 
 async def upload_wallpaper(call: types.CallbackQuery):
     await call.message.edit_text(
@@ -192,7 +192,7 @@ async def profile(call: types.CallbackQuery):
         text = 'выключены'
     await call.message.edit_text(f'<b>Ваша статистика.\n\
                                     \n  -  Айди - {user_id}\
-                                    \n  -  Имя - <i>{call.from_user.first_name}</i>\
+                                    \n  -  Имя - <i>{fmt.quote_html(call.from_user.first_name)}</i>\
                                     \n  -  Вы с нами с - <i>{db.get_user_date(user_id)}</i>\
                                     \n  -  Вы загрузили - {db.get_user_wallpapers(user_id)} обоев.\
                                     \n  -  У вас {db.get_user_likes(user_id)} лайков.\
@@ -238,11 +238,11 @@ async def inf(call: types.CallbackQuery):
     get_top = db.get_top_users()
     await call.message.edit_text(
         f'<b><i>Топ пользователей</i></b>\n'
-        f'<b>   {get_top[0][0]}    ⇝  {get_top[0][1]}</b>\n'
-        f'<b>   {get_top[1][0]}    ⇝  {get_top[1][1]}</b>\n'
-        f'<b>   {get_top[2][0]}    ⇝  {get_top[2][1]}</b>\n'
-        f'<b>   {get_top[3][0]}    ⇝  {get_top[3][1]}</b>\n'
-        f'<b>   {get_top[4][0]}    ⇝  {get_top[4][1]}</b>\n\n'
+        f'<b>   {fmt.quote_html(get_top[0][0])}    ⇝  {get_top[0][1]}</b>\n'
+        f'<b>   {fmt.quote_html(get_top[1][0])}    ⇝  {get_top[1][1]}</b>\n'
+        f'<b>   {fmt.quote_html(get_top[2][0])}    ⇝  {get_top[2][1]}</b>\n'
+        f'<b>   {fmt.quote_html(get_top[3][0])}    ⇝  {get_top[3][1]}</b>\n'
+        f'<b>   {fmt.quote_html(get_top[4][0])}    ⇝  {get_top[4][1]}</b>\n\n'
         f'<b><i>Общая статистика</i></b>\n'
         f'<b>   Всего загрузили    ⇝ {walls}</b>\n'
         f'<b>   Всего пользователей    ⇝ {users}</b>\n\n'
