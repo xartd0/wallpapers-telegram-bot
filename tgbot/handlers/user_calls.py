@@ -85,7 +85,7 @@ async def catalog(call: types.CallbackQuery):
         wallpaper = db.take_wallpaper_by_id(ids[-1])[0]
         cat = db.get_cat_by_id(wallpaper[6])
         caption = f'<b>Айди - <i>{wallpaper[0]}</i>\
-                    \nАвтор - <i>{wallpaper[4]}</i>\
+                    \nАвтор - <i>{fmt.quote_html(wallpaper[4])}</i>\
                     \nДобавлено - <i>{wallpaper[3]}</i>\
                     \nКатегория - <i>{cat}</i>\
                     \nЛайков - <i>{wallpaper[5]}</i></b>'
@@ -136,7 +136,7 @@ async def next_wall(call: types.CallbackQuery):
         wallpaper = db.take_wallpaper_by_id(ids[0])[0]
     cat = db.get_cat_by_id(wallpaper[6])
     caption = f'<b>Айди - <i>{wallpaper[0]}</i>\
-                \nАвтор - <i>{wallpaper[4]}</i>\
+                \nАвтор - <i>{fmt.quote_html(wallpaper[4])}</i>\
                 \nДобавлено - <i>{wallpaper[3]}</i>\
                 \nКатегория - <i>{cat}</i>\
                 \nЛайков - <i>{wallpaper[5]}</i></b>'
@@ -164,7 +164,7 @@ async def prev_wall(call: types.CallbackQuery):
     wallpaper = db.take_wallpaper_by_id(ids[prev_id - 1])[0]
     cat = db.get_cat_by_id(wallpaper[6])
     caption = f'<b>Айди - <i>{wallpaper[0]}</i>\
-                \nАвтор - <i>{wallpaper[4]}</i>\
+                \nАвтор - <i>{fmt.quote_html(wallpaper[4])}</i>\
                 \nДобавлено - <i>{wallpaper[3]}</i>\
                 \nКатегория - <i>{cat}</i>\
                 \nЛайков - <i>{wallpaper[5]}</i></b>'
